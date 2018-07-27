@@ -1,11 +1,13 @@
 import React from 'react';
 
-export default Rank => 
+const Rank = ({ name, entries }) => 
 	<div>
 		<div className='white f3'>
-			{'Andrei, your rank is ...'}
+			{`${name}, your current entry count is `}
 		</div>
 		<div className='white f2'>
-			{'#5'}
+			{`${entries}`}
 		</div>
 	</div>
+
+export default Rank;
