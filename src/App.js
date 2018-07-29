@@ -27,24 +27,25 @@ const particlesOptions = {
   }
 }
 
+const initailState = {
+	input: '',
+  imageUrl: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+  	id: '',
+		name: '',
+		email: '',
+		entries: 0,
+		joined: ''
+  }
+}
+
 class App extends Component {
   constructor(){
     super();
-    this.state = {
-      input: '',
-      imageUrl: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false,
-      user: {
-      	id: '',
-				name: '',
-				email: '',
-				password: '',
-				entries: 0,
-				join: ''
-      }
-    }
+    this.state = initailState;
   }
 
   loadUser = (data) => {
@@ -53,9 +54,8 @@ class App extends Component {
 	  		id: data.id,
 				name: data.name,
 				email: data.email,
-				password: data.password,
 				entries: data.entries,
-				join: data.join
+				joined: data.joined
 	  	}
   	})
   }
@@ -67,12 +67,10 @@ class App extends Component {
   }
 
   onRouteChange = (route) => {
-    if (route === 'signout') {
-      this.setState({ isSignedIn: false })  
+    if (route === 'signout' || route === 'signin' ) {
+      this.setState(initailState);
     } else if (route === 'home') {
-      this.setState({ isSignedIn: true })  
-    } else {
-      this.setState({ isSignedIn: false })  
+      this.setState({ isSignedIn: true });
     }
     this.setState({ route: route });
   }
@@ -92,7 +90,6 @@ class App extends Component {
   }
 
   displayFaceBox = (box) => {
-    // console.log(box);
     this.setState({ box: box });
   }
 
@@ -140,14 +137,12 @@ class App extends Component {
         />
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />
         { route === 'home' 
-          ? (
-          	<div>
+          ? <div>
               <Logo />
               <Rank name={name} entries={entries} />
               <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
               <FaceRegonition box={box} imageUrl={imageUrl} />
             </div>
-            )
           : (
           	route === 'signin'
             ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
