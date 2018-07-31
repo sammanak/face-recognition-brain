@@ -21,7 +21,7 @@ class Register extends React.Component {
 	onSubmitRegister = (event) => {
 		// console.log(this.state); // Input Then Click Register --> {registerName: "cam", registerEmail: "cam@gmail.com", registerPassword: "cam"}
 		const { registerName, registerEmail, registerPassword } = this.state;
-		fetch('http://localhost:3001/register', {
+		fetch('https://lit-escarpment-37081.herokuapp.com/register', {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -32,7 +32,7 @@ class Register extends React.Component {
 		})
 			.then(res => res.json())
 			.then(user => {
-				if (user){
+				if (user.id){
 					this.props.loadUser(user);
 					this.props.onRouteChange('home');
 				}
