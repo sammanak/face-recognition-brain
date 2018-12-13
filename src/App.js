@@ -7,12 +7,14 @@ import FaceRegonition from './components/FaceRegonition/FaceRegonition';
 import Rank from './components/Rank/Rank';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
+import Modal from './components/Modal/Modal';
+import Profile from './components/Profile/Profile';
 import './App.css';
 
 const particlesOptions = {
   particles: {
     number: {
-      value: 80,
+      value: 120,
       density: {
         enable: true,
         value_area: 800
@@ -27,12 +29,15 @@ const initailState = {
   boxes: [],
   route: 'signin',
   isSignedIn: false,
+  isProfileOpen: false,
   user: {
   	id: '',
 		name: '',
 		email: '',
 		entries: 0,
-		joined: ''
+    age: 0,
+    pet: '',
+    joined: ''
   }
 }
 
@@ -49,56 +54,109 @@ class App extends Component {
 				name: data.name,
 				email: data.email,
 				entries: data.entries,
+				age: data.age,
+				pet: data.pet,
 				joined: data.joined
 	  	}
   	})
   }
 
-  componentDidMount() {
-  	fetch('https://lit-escarpment-37081.herokuapp.com/')
-  		// .then(res => res.json())
-  		// .then(console.log)
+  componentDidMount() { 
+  	// fetch(process.env.SERVER_URL)
+    // .then(res => res.json())
+    // .then(console.log)
+    const token = window.sessionStorage.getItem('token');
+    if (token) {
+      fetch(`${process.env.SERVER_URL}/signin`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        }
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data && data.id) {
+            // console.log('success we need to get user profile');
+            fetch(`${process.env.SERVER_URL}/profile/${data.id}`, {
+              method: 'get',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token
+              }
+            })
+              .then(resp => resp.json())
+              .then(user => {
+                // console.log(user)
+                if (user && user.email) {
+                  this.loadUser(user);
+                  this.onRouteChange('home');
+                }
+              })
+          }
+        })
+        .catch(console.log)
+    }
   }
 
   onRouteChange = (route) => {
-    if (route === 'signout' || route === 'signin' ) {
-      this.setState(initailState);
+    if (route === 'signout' ) {
+      window.sessionStorage.clear();
+      return this.setState(initailState);
+    } else if ( route === 'signin' ) {
+      return this.setState(initailState);
     } else if (route === 'home') {
       this.setState({ isSignedIn: true });
     }
     this.setState({ route: route });
   }
 
-  calculateFaceLocation = (data) => {
-    return data.outputs[0].data.regions.map(face => {
-      const clarifaiFace = face.region_info.bounding_box;
+  toggleModal = () => {
+    this.setState(prevState => ({
+      ...prevState,
+      isProfileOpen: !this.state.isProfileOpen
+    }))
+  }
+
+  calculateFaceLocations = (data) => {
+    if (data && data.outputs) {
       const image = document.getElementById('inputimage');
       const width = Number(image.width);
       const height = Number(image.height);
       // console.log(width, height);
-      return {
-        leftCol: clarifaiFace.left_col * width,
-        topRow: clarifaiFace.top_row * height,
-        rightCol: width - (clarifaiFace.right_col * width),
-        bottomRow: height - (clarifaiFace.bottom_row * height)
-      }
-    })
+      // console.log(face);
+      return data.outputs[0].data.regions.map(face => {
+        const clarifaiFace = face.region_info.bounding_box;
+        return {
+          leftCol: clarifaiFace.left_col * width,
+          topRow: clarifaiFace.top_row * height,
+          rightCol: width - (clarifaiFace.right_col * width),
+          bottomRow: height - (clarifaiFace.bottom_row * height),
+          faceId: face.id
+        }
+      })
+    }
+    return;
   }
 
   displayFaceBox = (boxes) => {
-    this.setState({ boxes: boxes });
+    if (boxes) {
+      this.setState({ boxes: boxes });
+    }
   }
 
   onInputChange = (event) => {
     this.setState({ input: event.target.value });
   }
-
   
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    fetch('https://lit-escarpment-37081.herokuapp.com/imageurl', {
+    fetch(`${process.env.SERVER_URL}/imageurl`, {
 			method: 'post',
-			headers: { 'Content-Type': 'application/json' },
+			headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+      },
 			body: JSON.stringify({
 				input: this.state.input
 			})
@@ -106,9 +164,12 @@ class App extends Component {
 		.then(response => response.json())
     .then(response => {
     	if (response) {
-    		fetch('https://lit-escarpment-37081.herokuapp.com/image', {
+    		fetch(`${process.env.SERVER_URL}/image`, {
     			method: 'put',
-    			headers: { 'Content-Type': 'application/json' },
+    			headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': window.sessionStorage.getItem('token')
+          },
     			body: JSON.stringify({
     				id: this.state.user.id
     			})
@@ -121,14 +182,13 @@ class App extends Component {
     				this.setState(Object.assign(this.state.user, {entries: count}))
     			})
     	} 
-    	this.displayFaceBox(this.calculateFaceLocation(response))
+    	this.displayFaceBox(this.calculateFaceLocations(response))
     })
     .catch(error => console.log(error))
   }
 
   render() {
-
-    const { isSignedIn, imageUrl, route, boxes } = this.state;
+    const { isSignedIn, imageUrl, route, boxes, isProfileOpen, user } = this.state;
     const { name, entries } = this.state.user;
     return (
       <div className="App">
@@ -136,7 +196,12 @@ class App extends Component {
           className='particles' 
           params={particlesOptions} 
         />
-        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />
+        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} toggleModal={this.toggleModal} />
+        { isProfileOpen &&
+          <Modal>
+            <Profile isProfileOpen={isProfileOpen} toggleModal={this.toggleModal} user={user} loadUser={this.loadUser} />
+          </Modal>
+        }
         { route === 'home' 
           ? <div>
               <Logo />

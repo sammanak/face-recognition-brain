@@ -8,7 +8,7 @@ const FaceRegonition = ({ imageUrl, boxes }) => {
 				<img src={imageUrl} id='inputimage' alt='' className='pt20' width='500px' height='auto' />
 				{
 					boxes.map(box => {
-						return <div className='bounding-box' style={{ top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol }}></div>
+						return <div className='bounding-box' style={{ top: box.topRow, right: box.rightCol, bottom: box.bottomRow, left: box.leftCol }} key={box.faceId} ></div>
 					})
 				}
 			</div>

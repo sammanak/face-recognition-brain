@@ -1,8 +1,8 @@
 import React from 'react';
 
 class Register extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			registerName: '',
 			registerEmail: '',
@@ -18,10 +18,16 @@ class Register extends React.Component {
 	onPasswordChange = (event) => {
 		this.setState({ registerPassword: event.target.value })
 	}
-	onSubmitRegister = (event) => {
+
+	saveAuthTokenInSession = (token) => {
+		window.sessionStorage.setItem('token', token) // using browser api
+		// window.localStorage.setItem('token', token); 
+	}
+
+	onSubmitRegister = () => {
 		// console.log(this.state); // Input Then Click Register --> {registerName: "cam", registerEmail: "cam@gmail.com", registerPassword: "cam"}
-		const { registerName, registerEmail, registerPassword } = this.state;
-		fetch('https://lit-escarpment-37081.herokuapp.com/register', {
+		const { registerName, registerEmail, registerPassword } = this.state
+		fetch(`${process.env.SERVER_URL}/register`, {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -31,10 +37,25 @@ class Register extends React.Component {
 			})
 		})
 			.then(res => res.json())
-			.then(user => {
-				if (user.id){
-					this.props.loadUser(user);
-					this.props.onRouteChange('home');
+			.then(data => {
+				if (data.userId && data.success === 'true') {
+					this.saveAuthTokenInSession(data.token);
+					// console.log('success we need to get user profile');
+					fetch(`${process.env.SERVER_URL}/${data.userId}`, {
+						method: 'get',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': data.token
+						}
+					})
+					.then(resp => resp.json())
+					.then(user => {
+						// console.log(user)
+						if (user && user.email) {
+							this.props.loadUser(user);
+							this.props.onRouteChange('home');
+						}
+					})
 				}
 			})
 	}

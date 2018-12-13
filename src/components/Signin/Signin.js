@@ -3,8 +3,8 @@ import React from 'react';
 
 
 class Signin extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			signInEmail: '',
 			signInPassword: ''
@@ -19,23 +19,50 @@ class Signin extends React.Component {
 		this.setState({signInPassword: event.target.value});
 	}
 
+	saveAuthTokenInSession = (token) => {
+		window.sessionStorage.setItem('token', token); // using browser api
+		// window.localStorage.setItem('token', token); 
+	}
+
 	onSubmitSignIn = () => {
 		// console.log(this.state); //  {signInEmail: "test@gmail.com", signInPassword: "test"}
-		// const { signInEmail, signInPassword } = this.state;
+		const { signInEmail, signInPassword } = this.state;
 
-		fetch('https://lit-escarpment-37081.herokuapp.com/signin', {
+		fetch(`${process.env.SERVER_URL}/signin`, {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				email: this.state.signInEmail,
-				password: this.state.signInPassword
+				email: signInEmail,
+				password: signInPassword
 			})
 		})
 			.then(res => res.json())
-			.then(user => {
-				if (user.id) {
-					this.props.loadUser(user);
-					this.props.onRouteChange('home');
+			// Old Code
+			// .then(user => {
+			// 	if (user.id) {
+			// 		this.props.loadUser(user);
+			// 		this.props.onRouteChange('home');
+			// 	}
+			// })
+			.then(data => {
+				if (data.userId && data.success === 'true') {
+					this.saveAuthTokenInSession(data.token);
+					// console.log('success we need to get user profile');
+					fetch(`${process.env.SERVER_URL}/profile/${data.userId}`, {
+						method: 'get',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': data.token
+						}
+					})
+					.then(resp => resp.json())
+					.then(user => {
+						// console.log(user)
+						if (user && user.email) {
+							this.props.loadUser(user);
+							this.props.onRouteChange('home');
+						}
+					})
 				}
 			})
 	}
