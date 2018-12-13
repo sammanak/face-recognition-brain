@@ -28,7 +28,7 @@ class Signin extends React.Component {
 		// console.log(this.state); //  {signInEmail: "test@gmail.com", signInPassword: "test"}
 		const { signInEmail, signInPassword } = this.state;
 
-		fetch(`${process.env.SERVER_URL}/signin`, {
+		fetch(`${process.env.NODE_SERVER_URL}/signin`, {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -48,7 +48,7 @@ class Signin extends React.Component {
 				if (data.userId && data.success === 'true') {
 					this.saveAuthTokenInSession(data.token);
 					// console.log('success we need to get user profile');
-					fetch(`${process.env.SERVER_URL}/profile/${data.userId}`, {
+					fetch(`${process.env.NODE_SERVER_URL}/profile/${data.userId}`, {
 						method: 'get',
 						headers: {
 							'Content-Type': 'application/json',
