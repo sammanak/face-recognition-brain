@@ -40,7 +40,7 @@ class Profile extends Component {
   }
 
   onProfileUpdate = (data) => {
-    fetch(`https://lit-escarpment-37081.herokuapp.com/profile/${this.props.user.id}`, {
+    fetch(`${process.env.SERVER_URL}/profile/${this.props.user.id}`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',

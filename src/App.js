@@ -62,12 +62,12 @@ class App extends Component {
   }
 
   componentDidMount() { 
-  	// fetch(https://lit-escarpment-37081.herokuapp.com/)
+  	// fetch(process.env.SERVER_URL)
     // .then(res => res.json())
     // .then(console.log)
     const token = window.sessionStorage.getItem('token');
     if (token) {
-      fetch('https://lit-escarpment-37081.herokuapp.com/signin', {
+      fetch(`${process.env.SERVER_URL}/signin`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ class App extends Component {
         .then(data => {
           if (data && data.id) {
             // console.log('success we need to get user profile');
-            fetch(`https://lit-escarpment-37081.herokuapp.com/profile/${data.id}`, {
+            fetch(`${process.env.SERVER_URL}/profile/${data.id}`, {
               method: 'get',
               headers: {
                 'Content-Type': 'application/json',
@@ -151,7 +151,7 @@ class App extends Component {
   
   onButtonSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    fetch('https://lit-escarpment-37081.herokuapp.com/imageurl', {
+    fetch(`${process.env.SERVER_URL}/imageurl`, {
 			method: 'post',
 			headers: { 
         'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ class App extends Component {
 		.then(response => response.json())
     .then(response => {
     	if (response) {
-    		fetch('https://lit-escarpment-37081.herokuapp.com/image', {
+    		fetch(`${process.env.SERVER_URL}/image`, {
     			method: 'put',
     			headers: { 
             'Content-Type': 'application/json',
