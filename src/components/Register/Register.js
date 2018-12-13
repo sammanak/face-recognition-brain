@@ -27,7 +27,7 @@ class Register extends React.Component {
 	onSubmitRegister = () => {
 		// console.log(this.state); // Input Then Click Register --> {registerName: "cam", registerEmail: "cam@gmail.com", registerPassword: "cam"}
 		const { registerName, registerEmail, registerPassword } = this.state
-		fetch('https://lit-escarpment-37081.herokuapp.com/register', {
+		fetch(`${process.env.SERVER_URL}/register`, {
 			method: 'post',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -41,7 +41,7 @@ class Register extends React.Component {
 				if (data.userId && data.success === 'true') {
 					this.saveAuthTokenInSession(data.token);
 					// console.log('success we need to get user profile');
-					fetch(`https://lit-escarpment-37081.herokuapp.com/${data.userId}`, {
+					fetch(`${process.env.SERVER_URL}/profile/${data.userId}`, {
 						method: 'get',
 						headers: {
 							'Content-Type': 'application/json',
