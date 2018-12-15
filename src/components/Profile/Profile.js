@@ -60,7 +60,7 @@ class Profile extends Component {
     const { name, age, pet } = this.state;
     return (
       <div className="profile-modal">
-        <article className="pa5 br3 shadow-5 bg-white mv4 w-100 w-50-m w-25-l mw6 db center" style={{position: 'relative'}}>
+        <article className="pa5 br3 shadow-5 bg-white mv4 w-100 w-50-m w-25-l mw6 db" style={{position: 'relative'}}>
           <div className="db w-100">
             <div className="modal-close" onClick={toggleModal}>&times;</div>
             {/* <h1 className="center fw6">Profile</h1> */}
