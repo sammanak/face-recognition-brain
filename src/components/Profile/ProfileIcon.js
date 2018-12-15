@@ -26,7 +26,7 @@ class ProfileIcon extends Component {
             data-toggle="dropdown"
             aria-expanded={this.state.dropdownOpen}
           >
-            <img src="http://tachyons.io/img/logo.jpg" className="br-100 pa1 ba b--white-70 h3 w3 shadow-5 pointer" alt="avatar" />
+            <img src="https://lh3.googleusercontent.com/-F-86m_b42lE/AAAAAAAAAAI/AAAAAAAAAAA/1gpgotU7E0o/s181-c/115736155012856056412.jpg" className="br-100 pa1 ba b--white-70 h3 w3 shadow-5 pointer" alt="avatar" />
           </DropdownToggle>
           <DropdownMenu right className="mt3 shadow-5">
             <DropdownItem onClick={this.props.toggleModal}>View Profile</DropdownItem>

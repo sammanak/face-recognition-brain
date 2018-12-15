@@ -64,7 +64,7 @@ class Profile extends Component {
           <div className="db w-100">
             <div className="modal-close" onClick={toggleModal}>&times;</div>
             {/* <h1 className="center fw6">Profile</h1> */}
-            <img src="http://tachyons.io/img/logo.jpg" className="db br-100 pa1 ba b--black-20 h3 w3 center" alt="avatar" />
+            <img src="https://lh3.googleusercontent.com/-F-86m_b42lE/AAAAAAAAAAI/AAAAAAAAAAA/1gpgotU7E0o/s181-c/115736155012856056412.jpg" className="db br-100 pa1 ba b--black-20 h3 w3 center" alt="avatar" />
             {/* <h5 className="db fw6 center tc">{user.name}</h5> Old Way*/}
             <h5 className="db fw6 center tc">{name}</h5>
             <h5>{`Images Entries: ${user.entries}`}</h5>
